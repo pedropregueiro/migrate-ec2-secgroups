@@ -29,21 +29,24 @@ def migrate_groups(origin, dest, groups, aws_key, aws_secret):
         sys.exit(0)
 
     from_groups = from_conn.get_all_security_groups()
+    logging.debug("from groups: %s" % from_groups)
     to_groups = [group.name for group in to_conn.get_all_security_groups()]
+    logging.debug("to groups: %s" % to_groups)
     for from_group in from_groups:
         if from_group.name not in groups:
             continue
 
-        if from_group.name in groups:
+        if from_group.name in to_groups:
             logging.warn("security group with name '%s' already exists on region '%s'" % (
                 from_group.name, dest))
             continue
 
         try:
+            logging.info("migrating group %s from %s to %s" % (from_group.name, origin, dest))
             from_group.copy_to_region(boto.ec2.get_region(dest))
         except Exception as e:
-            logging.error("error trying to migrate group '%s' from '%s' to '%s'" % (
-                from_group.name, origin, dest))
+            logging.error("error migrating group %s from %s to %s: %s" % (
+                from_group.name, origin, dest, e))
             continue
         logging.info(
             "migrated group '%s' from '%s' to '%s' successfully!" % (from_group.name, origin, dest))
