@@ -56,5 +56,8 @@ docs/_build/
 # Virtualenv
 include/
 
+# PyCharm
+.idea
 
+# Project specific
 aws_credentials.cfg
