@@ -8,7 +8,7 @@ Tool to migrate security groups between EC2 regions
 Before running this script you need to set your Amazon credentials in one of the following 3 forms:
 
 * pass as parameters to the script: --key and --secret
-* fill in the file credentials.cfg
+* copy the `aws_credentials.cfg.template` to `aws_credentials.cfg` and add your credentials there
 * set as environment variables (AWS_KEY and AWS_SECRET)
 
 ## Running

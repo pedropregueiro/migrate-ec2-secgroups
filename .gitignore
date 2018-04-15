@@ -56,3 +56,5 @@ docs/_build/
 # Virtualenv
 include/
 
+
+aws_credentials.cfg
