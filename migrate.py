@@ -28,21 +28,23 @@ def migrate_groups(origin, dest, groups, aws_key, aws_secret):
 	from_groups = from_conn.get_all_security_groups()
 	to_groups = [ group.name for group in to_conn.get_all_security_groups() ]
 	for from_group in from_groups:
+		if from_group.name not in groups:
+			continue
+
 		if from_group.name in groups:
-			if from_group.name in to_groups:
-				logging.warn("security group with name '%s' already exists on region '%s'" % (from_group.name, dest))
-				continue
-			else:
-				try:
-					from_group.copy_to_region(boto.ec2.get_region(dest))
-				except Exception as e:
-					logging.error("error trying to migrate group '%s' from '%s' to '%s'" % (from_group.name, origin, dest))
-					continue
-				logging.info("migrated group '%s' from '%s' to '%s' successfully!" % (from_group.name, origin, dest))
+			logging.warn("security group with name '%s' already exists on region '%s'" % (from_group.name, dest))
+			continue
+
+		try:
+			from_group.copy_to_region(boto.ec2.get_region(dest))
+		except Exception as e:
+			logging.error("error trying to migrate group '%s' from '%s' to '%s'" % (from_group.name, origin, dest))
+			continue
+		logging.info("migrated group '%s' from '%s' to '%s' successfully!" % (from_group.name, origin, dest))
 
 
 if __name__ == '__main__':
-	
+
 	AWS_KEY = ''
 	AWS_SECRET = ''
 
@@ -80,5 +82,5 @@ if __name__ == '__main__':
 		if 'AWS_KEY' in os.environ and 'AWS_SECRET' in os.environ:
 			AWS_KEY = os.environ['AWS_KEY']
 			AWS_SECRET = os.environ['AWS_SECRET']
-	
+
 	migrate_groups(origin=from_region, dest=to_region, groups=groups, aws_key=AWS_KEY, aws_secret=AWS_SECRET)
